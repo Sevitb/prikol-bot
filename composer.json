@@ -11,5 +11,7 @@
             "name": "Alexandr Peskovatzkov"
         }
     ],
-    "require": {}
+    "require": {
+        "telegram-bot/api": "^2.5"
+    }
 }
