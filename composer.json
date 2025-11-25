@@ -12,6 +12,11 @@
         }
     ],
     "require": {
-        "telegram-bot/api": "^2.5"
+        "telegram-bot/api": "^2.5",
+        "vlucas/phpdotenv": "^5.6",
+        "analog/analog": "^1.0"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^7.3"
     }
 }
