@@ -11,6 +11,11 @@ final class CommandList implements Iterator
 {
     private array $commands = [];
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     /**
      * @param string $name
      * @param class-string<InvokableCommandInterface> $commandClass

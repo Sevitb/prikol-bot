@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sevit\PrikolBot;
 
-class Command
+final readonly class Command
 {
 
 }

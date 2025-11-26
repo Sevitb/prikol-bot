@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Sevit\PrikolBot\Commands;
 
-use TelegramBot\Api\Client;
-use TelegramBot\Api\Types\Message;
+use Sevit\PrikolBot\Response;
+use TelegramBot\Api\Types\Update;
 
 final readonly class StartCommand implements InvokableCommandInterface
 {
-    public function __invoke(Client $botClient, Message $message): void
+    public function __invoke(Update $update): Response
     {
-        $id = $message->getChat()->getId();
-        $botClient->sendMessage($id, 'Здарова, @' . $message->getFrom()->getUsername() . '! Есть чем поделиться?');
+        $message = $update->getMessage();
+        return new Response(
+            'Здарова, @' . $message->getFrom()->getUsername() . '! Есть чем поделиться?',
+        );
     }
 }

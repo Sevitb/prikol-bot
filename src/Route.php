@@ -6,28 +6,28 @@ namespace Sevit\PrikolBot;
 
 use Closure;
 
-final class RouteCondition
+final class Route
 {
-    private array $conditions = [];
+    private array $middlewares = [];
 
     public function __construct(
-        private Closure $handler,
+        private string|Closure $handler,
     ) {
     }
 
-    public function addCondition(Closure $condition): self
+    public function getHandler(): string|Closure
     {
-        $this->conditions[] = $condition;
+        return $this->handler;
+    }
+
+    public function addMiddleware(string $middlewareClassString): self
+    {
+        $this->middlewares[] = $middlewareClassString;
         return $this;
     }
 
-    public function setMiddlewares(): self
+    public function getMiddlewares(): array
     {
-        return $this;
-    }
-
-    public function addMiddleware(): self
-    {
-        return $this;
+        return $this->middlewares;
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sevit\PrikolBot\Commands;
 
-use TelegramBot\Api\Client;
-use TelegramBot\Api\Types\Message;
+use Sevit\PrikolBot\Response;
+use TelegramBot\Api\Types\Update;
 
 interface InvokableCommandInterface
 {
-    public function __invoke(Client $botClient, Message $message): void;
+    public function __invoke(Update $update): Response;
 }
