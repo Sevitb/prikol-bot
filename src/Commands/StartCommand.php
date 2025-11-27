@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sevit\PrikolBot\Commands;
 
-use Sevit\PrikolBot\Response;
+use Sevit\PrikolBot\Modules\Core\Response;
 use TelegramBot\Api\Types\Update;
 
-final readonly class StartCommand implements InvokableCommandInterface
+final readonly class StartCommand
 {
     public function __invoke(Update $update): Response
     {

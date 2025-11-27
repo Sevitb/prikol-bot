@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Sevit\PrikolBot\Commands;
 
-use Sevit\PrikolBot\Response;
+use Sevit\PrikolBot\Modules\Core\Response;
 use TelegramBot\Api\BotApi;
-use TelegramBot\Api\Client;
-use TelegramBot\Api\Types\Message;
 use TelegramBot\Api\Types\Update;
 
-final readonly class UploadCommand implements InvokableCommandInterface
+final readonly class UploadCommand
 {
     public function __construct(
         private BotApi $botApi,

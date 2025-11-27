@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sevit\PrikolBot;
+namespace Sevit\PrikolBot\Modules\Core;
 
 use Dotenv\Dotenv;
 
@@ -10,14 +10,16 @@ final class Configuration
 {
     private array $settings = [];
 
-    public function __construct()
+    public function __construct(
+        private string $rootPath,
+    )
     {
         $this->loadEnv();
     }
 
     private function loadEnv(): void
     {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__));
+        $dotenv = Dotenv::createImmutable($this->getRootPath());
         $dotenv->safeLoad();
     }
 
@@ -49,6 +51,6 @@ final class Configuration
 
     public function getRootPath(): string
     {
-        return '../';
+        return $this->rootPath;
     }
 }

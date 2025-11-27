@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sevit\PrikolBot;
+namespace Sevit\PrikolBot\Modules\Core;
 
 final readonly class Response
 {
