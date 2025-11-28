@@ -11,12 +11,16 @@ use Sevit\PrikolBot\Modules\Core\Enums\ChatType;
 use Sevit\PrikolBot\Modules\Core\Routing\RouteList;
 use Sevit\PrikolBot\Middlewares;
 
-$routeList = new RouteList();
+$routeList = (new RouteList())
+    ->setIgnoreUndefinedRoutesChatTypes([ChatType::Group, ChatType::Supergroup]);
 $routeList->addCommand('start', Commands\StartCommand::class);
+
 $routeList->addTextCondition('В прикол', Commands\UploadCommand::class)
     ->addMiddleware(Middlewares\CheckCanUpload::class)
     ->addAvailableChatType(ChatType::Group);
-$routeList->addStandardHandlerForChatTypes([ChatType::Private], Commands\UploadCommand::class);
+
+$routeList->addStandardHandlerForChatTypes([ChatType::Private], Commands\UploadCommand::class)
+    ->addMiddleware(Middlewares\CheckCanUpload::class);
 
 $app = new Application(
     new Configuration(

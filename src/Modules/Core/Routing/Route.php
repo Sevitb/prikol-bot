@@ -8,7 +8,7 @@ use Closure;
 use Sevit\PrikolBot\Modules\Core\Enums\ChatType;
 use Sevit\PrikolBot\Modules\Core\Middlewares\MiddlewareInterface;
 
-final class Route
+class Route
 {
     /**
      * @var class-string<MiddlewareInterface>

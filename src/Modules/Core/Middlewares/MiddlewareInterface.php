@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sevit\PrikolBot\Modules\Core\Middlewares;
 
-use Sevit\PrikolBot\Modules\Core\Response;
+use Sevit\PrikolBot\Modules\Core\Entities\Response;
 use TelegramBot\Api\Types\Update;
 
 interface MiddlewareInterface

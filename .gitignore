@@ -1,5 +1,6 @@
 /.idea
 /vendor
-/storage
+/storage/*
+!/storage/app
 
 .env

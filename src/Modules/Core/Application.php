@@ -10,6 +10,7 @@ use Analog\Handler\Multi;
 use Analog\Logger;
 use Closure;
 use Psr\Log\LoggerInterface;
+use Sevit\PrikolBot\Modules\Core\Entities\Response;
 use Sevit\PrikolBot\Modules\Core\Enums\ChatType;
 use Sevit\PrikolBot\Modules\Core\Exceptions\BotException;
 use Sevit\PrikolBot\Modules\Core\Routing\Route;
@@ -17,6 +18,7 @@ use Sevit\PrikolBot\Modules\Core\Routing\RouteList;
 use Sevit\PrikolBot\Modules\Core\Utils\ChatTypeUtil;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
+use TelegramBot\Api\Types\Animation;
 use TelegramBot\Api\Types\Update;
 use Throwable;
 
@@ -78,30 +80,50 @@ final class Application
                 $this->botApi->sendMessage($update->getMessage()->getChat()->getId(), $exc->getMessage());
             } catch (Throwable $exc) {
                 $this->logger->error('Не удалось обработать обновление: ' . $exc->getMessage());
-                $this->botApi->sendMessage($update->getMessage()->getChat()->getId(), 'Не удалось обработать сообщение: ' . $update->getMessage()->getText());
+                $this->botApi->sendMessage($update->getMessage()->getChat()->getId(), 'Не удалось обработать сообщение.');
             }
         }
     }
 
     private function handleUpdate(Update $update): void
     {
-        $route = $this->resolve($update);
+        // Пока обрабатываем только исходные сообщение
+        // Если приходит update с отредактированным сообщением, его скипаем
+        if($update->getMessage() === null || !$route = $this->resolve($update)) {
+            return;
+        }
 
+        $chatId = $update->getMessage()->getChat()->getId();
         $response = $this->process($route, $update);
 
-        if ($response->hasTextData()) {
-            $this->botApi->sendMessage($update->getMessage()->getChat()->getId(), $response->getTextData());
+        foreach ($response->getMessages() as $message) {
+            if ($message->getAnimation()) {
+                $this->botApi->sendAnimation(
+                    chatId: $chatId,
+                    animation: $message->getAnimation(),
+                    caption: $message->getText(),
+                    parseMode: $message->getParseMode()?->value,
+                );
+                continue;
+            }
+            if ($message->getText()) {
+                $this->botApi->sendMessage(
+                    chatId: $chatId,
+                    text: $message->getText(),
+                    parseMode: $message->getParseMode()?->value,
+                );
+            }
         }
     }
 
-    private function resolve(Update $update): Route
+    private function resolve(Update $update): ?Route
     {
         $message = $update->getMessage();
         $chat = $message->getChat();
         $text = $message->getText() ?? $message->getCaption();
 
-        $route = null;
-        if (!$route = $this->routeList->getByTextCondition($text)) {
+        $route = isset($text) ? $this->routeList->getByTextCondition($text) : null;
+        if (!isset($route)) {
             $route = $this->routeList->getByCondition($message);
         }
 
@@ -116,6 +138,10 @@ final class Application
             return $route;
         }
 
+        if (!$this->routeList->isUndefinedRoutesIgnoredForChatType($chatType)) {
+            return null;
+        }
+
         throw new BotException('Не понимаю о чем ты ¯\_(ツ)_/¯');
     }
 
@@ -123,7 +149,7 @@ final class Application
     {
         $handler = $route->getHandler();
         if (is_string($handler) && class_exists($handler)) {
-            $handler = new $handler($this->botApi);
+            $handler = new $handler($this->botApi, $this->config);
         } elseif (!$handler instanceof Closure) {
             throw new Exception('Неизвестный обработчик: ' . $handler);
         }

@@ -26,6 +26,11 @@ final class RouteList
      */
     private array $standardChatTypeRoutes = [];
 
+    /**
+     * @var ChatType[]
+     */
+    private array $ignoreUndefinedRoutesChatTypes = [];
+
     public static function create(): self
     {
         return new self();
@@ -81,24 +86,40 @@ final class RouteList
     public function addStandardHandlerForChatTypes(array $chatTypes, string|Closure $handler): Route
     {
         $route = new Route($handler);
-        $code = ChatTypeUtil::getChatTypesCode($chatTypes);
-        $this->standardChatTypeRoutes[$code] = $route;
+        foreach ($chatTypes as $chatType) {
+            $this->standardChatTypeRoutes[$chatType->getId()] = $route;
+        }
 
         return $route;
     }
 
     public function getStandardForChatType(ChatType $chatType): ?Route
     {
-        if (isset($this->standardChatTypeRoutes[$chatType->getId()])) {
-            return $this->standardChatTypeRoutes[$chatType->getId()];
+        return $this->standardChatTypeRoutes[$chatType->getId()] ?? null;
+    }
+
+    /**
+     * @param ChatType[] $chatTypes
+     * @return self
+     */
+    public function setIgnoreUndefinedRoutesChatTypes(array $chatTypes): self
+    {
+        $this->ignoreUndefinedRoutesChatTypes = [];
+        foreach ($chatTypes as $chatType) {
+            $this->addIgnoreUndefinedRoutesChatType($chatType);
         }
 
-        foreach ($this->standardChatTypeRoutes as $code => $route) {
-            if ($code & $chatType->getId()) {
-                return $route;
-            }
-        }
+        return $this;
+    }
 
-        return null;
+    public function addIgnoreUndefinedRoutesChatType(ChatType $chatType): self
+    {
+        $this->ignoreUndefinedRoutesChatTypes[$chatType->getId()] = $chatType;
+        return $this;
+    }
+
+    public function isUndefinedRoutesIgnoredForChatType(ChatType $chatType): bool
+    {
+        return isset($this->ignoreUndefinedRoutesChatTypes[$chatType->getId()]);
     }
 }
